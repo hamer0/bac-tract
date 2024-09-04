@@ -22,3 +22,5 @@ cmd/bp2csv
 cmd/bp2ddl
 cmd/bp2ora
 cmd/bp2pg
+
+bin
