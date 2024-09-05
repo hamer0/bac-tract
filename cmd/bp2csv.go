@@ -19,6 +19,7 @@ import (
 
 type params struct {
 	baseDir    string
+	output     string
 	tableName  string
 	tablesFile string
 	rowLimit   uint64
@@ -32,6 +33,7 @@ func main() {
 	var v params
 
 	flag.StringVar(&v.baseDir, "b", "", "The directory containing the unzipped bacpac file.")
+	flag.StringVar(&v.output, "o", "", "The output directory to write files into.")
 	flag.StringVar(&v.tableName, "t", "", "The table to extract data from. When not specified then extract all tables")
 	flag.StringVar(&v.tablesFile, "f", "", "The file to read the list of tables to extract from, one table per line")
 	flag.Uint64Var(&v.rowLimit, "c", 0, "The number of rows to extract. When 0 extract all rows.")
@@ -105,7 +107,9 @@ func mkFile(t bp.Table, v params) {
 	r, err := t.DataReader()
 	dieOnErrf("DataReader failed: %q", err)
 
-	target := fmt.Sprintf("%s.%s.csv", t.Schema, t.TabName)
+	os.Mkdir(v.output, os.ModeDir)
+
+	target := fmt.Sprintf("%s/%s.%s.csv", v.output, t.Schema, t.TabName)
 	f := openOutput(target)
 	defer deferredClose(f)
 	w := csv.NewWriter(f)
